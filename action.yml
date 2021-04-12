@@ -37,6 +37,9 @@ runs:
   using: composite
   steps:
     - shell: bash
+      id: create_downloads_folder
+      run: mkdir ${HOME}/downloads
+    - shell: bash
       id: create_gke_cluster
       env:
         GKE_VERSION: ${{ inputs.GKEClusterVersion }}

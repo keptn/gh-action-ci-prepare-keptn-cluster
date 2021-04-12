@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # shellcheck disable=SC1091
-source test/utils.sh
+source ./utils.sh
 
 # authenticate at Keptn API
 KEPTN_API_URL="http://$(kubectl -n keptn get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api"

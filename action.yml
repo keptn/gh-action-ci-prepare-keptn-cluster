@@ -111,7 +111,7 @@ runs:
     - shell: bash
       id: verify_keptn_deployment
       run: |
-        source test/utils.sh
+        source ./utils.sh
         echo "Verifying that services and namespaces have been created"
 
         # verify the deployments within the keptn namespace (for keptn control plane)
@@ -136,7 +136,7 @@ runs:
     - shell: bash
       id: authenticate_keptn_cli
       run: |
-        source test/utils.sh
+        source ./utils.sh
         # authenticate at Keptn API
         KEPTN_ENDPOINT=http://$(kubectl -n ${KEPTN_NAMESPACE} get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
 

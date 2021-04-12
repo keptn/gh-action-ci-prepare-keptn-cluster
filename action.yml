@@ -132,12 +132,10 @@ runs:
         verify_deployment_in_namespace "statistics-service" ${KEPTN_NAMESPACE}
 
         # verify deployments for continuous delivery
-        if [[ "$RUN_CONTINUOUS_DELIVERY_TEST" == "true" ]]; then
-          verify_deployment_in_namespace "remediation-service" ${KEPTN_NAMESPACE}
-          verify_deployment_in_namespace "approval-service" ${KEPTN_NAMESPACE}
-          verify_deployment_in_namespace "helm-service" ${KEPTN_NAMESPACE}
-          verify_deployment_in_namespace "jmeter-service" ${KEPTN_NAMESPACE}
-        fi
+        verify_deployment_in_namespace "remediation-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "approval-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "helm-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "jmeter-service" ${KEPTN_NAMESPACE}
 
         # verify the datastore deployments
         verify_deployment_in_namespace "mongodb" ${KEPTN_NAMESPACE}

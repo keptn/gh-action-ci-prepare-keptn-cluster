@@ -110,6 +110,7 @@ runs:
       id: setup_keptn_project
       env:
         KEPTN_PROJECT: ${{ inputs.KeptnProject }}
+        KEPTN_PROJECT_VERSION: ${{ inputs.KeptnProjectVersion }}
       run: ${{ github.action_path }}/setup_keptn_project.sh
 
 

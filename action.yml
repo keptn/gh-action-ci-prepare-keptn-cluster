@@ -59,21 +59,15 @@ runs:
         ${{ github.action_path }}/gke_create_cluster.sh
         ${{ github.action_path }}/gke_authenticate_at_cluster.sh
 
-    - shell: install_istio
+    - shell: bash
+      id: install_istio
       run: ${{ github.action_path }}/install_istio.sh
 
     - shell: bash
       id: install_keptn_cli
       env:
         KEPTN_VERSION: ${{ inputs.KeptnVersion }}
-      run: |
-        CLUSTER_NAME_NIGHTLY=gh-nightly
-        BRANCH_SLUG=$(echo $BRANCH | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
-        export CLUSTER_NAME_NIGHTLY=${CLUSTER_NAME_NIGHTLY}-${BRANCH_SLUG:0:15}-gke${GKE_VERSION//./}
-        echo $CLUSTER_NAME_NIGHTLY
-        echo "Installing gcloud CLI"
-        export OS_TYPE="linux"
-        ${{ github.action_path }}/download_and_install_keptn.sh
+      run: ${{ github.action_path }}/download_and_install_keptn.sh
 
     - shell: bash
       id: install_keptn

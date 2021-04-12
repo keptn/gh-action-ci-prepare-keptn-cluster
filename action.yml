@@ -116,32 +116,32 @@ runs:
         echo "Verifying that services and namespaces have been created"
 
         # verify the deployments within the keptn namespace (for keptn control plane)
-        verify_deployment_in_namespace "api-gateway-nginx" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "api-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "bridge" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "configuration-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "lighthouse-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "shipyard-controller" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "statistics-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "api-gateway-nginx" keptn
+        verify_deployment_in_namespace "api-service" keptn
+        verify_deployment_in_namespace "bridge" keptn
+        verify_deployment_in_namespace "configuration-service" keptn
+        verify_deployment_in_namespace "lighthouse-service" keptn
+        verify_deployment_in_namespace "shipyard-controller" keptn
+        verify_deployment_in_namespace "statistics-service" keptn
 
         # verify deployments for continuous delivery
-        verify_deployment_in_namespace "remediation-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "approval-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "helm-service" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "jmeter-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "remediation-service" keptn
+        verify_deployment_in_namespace "approval-service" keptn
+        verify_deployment_in_namespace "helm-service" keptn
+        verify_deployment_in_namespace "jmeter-service" keptn
 
         # verify the datastore deployments
-        verify_deployment_in_namespace "mongodb" ${KEPTN_NAMESPACE}
-        verify_deployment_in_namespace "mongodb-datastore" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "mongodb" keptn
+        verify_deployment_in_namespace "mongodb-datastore" keptn
 
     - shell: bash
       id: authenticate_keptn_cli
       run: |
         source ./utils.sh
         # authenticate at Keptn API
-        KEPTN_ENDPOINT=http://$(kubectl -n ${KEPTN_NAMESPACE} get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
+        KEPTN_ENDPOINT=http://$(kubectl -n keptn get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
 
-        KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n ${KEPTN_NAMESPACE} -ojsonpath={.data.keptn-api-token} | base64 --decode)
+        KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
 
         echo "KEPTN_ENDPOINT=${KEPTN_ENDPOINT}"
 

@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
+        #with:
         #path: gh-action-setup-keptn # uncomment to test locally
       - name: Setup Keptn
         id: setup-keptn

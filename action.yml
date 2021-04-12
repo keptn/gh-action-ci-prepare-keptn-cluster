@@ -51,8 +51,6 @@ runs:
       run: |
         CLUSTER_NAME_NIGHTLY=gh-nightly
         BRANCH_SLUG=$(echo $BRANCH | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
-        export CLUSTER_NAME_NIGHTLY=${CLUSTER_NAME_NIGHTLY}-${BRANCH_SLUG:0:15}-gke${GKE_VERSION//./}
-        echo $CLUSTER_NAME_NIGHTLY
         echo "Installing gcloud CLI"
         export OS_TYPE="linux"
         ${{ github.action_path }}/download_and_install_gcloud.sh

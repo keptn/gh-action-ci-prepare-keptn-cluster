@@ -1,0 +1,162 @@
+name: 'Setup Keptn'
+description: 'Creates a GKE Cluster and installs Keptn on it'
+inputs:
+  KeptnVersion:
+    description: Version of Keptn to be installed.
+    default: '0.8.1'
+    required: false
+  GKEClusterVersion:
+    description: Version of GKE Cluster
+    default: '1.20'
+    required: false
+  GKEClusterRegion:
+    description: Region of the GKE Cluster
+    default: 'us-east1'
+    required: false
+  GKEProjectName:
+    description: Name of the GKE Project
+    required: true
+  GKEClusterName:
+    description: Name of the GKE Cluster
+    required: true
+  GCloudComputeZone:
+    description: Name of the GCloud compute Zone
+    default: 'us-east1-b'
+    required: false
+  GCloudServiceKey:
+    description: GCloud service Key
+    required: true
+outputs:
+  keptnAPIURL:
+    value: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
+    description: URL of the created Keptn instance
+  keptnAPIToken:
+    value: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
+    description: API Token of the created Keptn instance
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      id: create_gke_cluster
+      env:
+        GKE_VERSION: ${{ inputs.GKEClusterVersion }}
+        GKE_CLUSTER_NAME: ${{ inputs.GKEClusterName }}
+        GCLOUD_SERVICE_KEY: ${{ inputs.GCloudServiceKey }}
+        GCLOUD_PROJECT_NAME: ${{ inputs.GKEProjectName }}
+        CLOUDSDK_COMPUTE_ZONE: ${{ inputs.GCloudComputeZone }}
+        CLOUDSDK_REGION: "us-east1"
+      run: |
+        CLUSTER_NAME_NIGHTLY=gh-nightly
+        BRANCH_SLUG=$(echo $BRANCH | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+        export CLUSTER_NAME_NIGHTLY=${CLUSTER_NAME_NIGHTLY}-${BRANCH_SLUG:0:15}-gke${GKE_VERSION//./}
+        echo $CLUSTER_NAME_NIGHTLY
+        echo "Installing gcloud CLI"
+        export OS_TYPE="linux"
+        ${{ github.action_path }}/download_and_install_gcloud.sh
+        echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ~/gcloud-service-key.json
+        gcloud auth activate-service-account --key-file ~/gcloud-service-key.json
+        ${{ github.action_path }}/gke_create_cluster.sh
+        ${{ github.action_path }}/gke_authenticate_at_cluster.sh
+
+    - shell: install_istio
+      run: ${{ github.action_path }}/install_istio.sh
+
+    - shell: bash
+      id: install_keptn_cli
+      env:
+        KEPTN_VERSION: ${{ inputs.KeptnVersion }}
+      run: |
+        CLUSTER_NAME_NIGHTLY=gh-nightly
+        BRANCH_SLUG=$(echo $BRANCH | iconv -t ascii//TRANSLIT | sed -r s/[^a-zA-Z0-9]+/-/g | sed -r s/^-+\|-+$//g | tr A-Z a-z)
+        export CLUSTER_NAME_NIGHTLY=${CLUSTER_NAME_NIGHTLY}-${BRANCH_SLUG:0:15}-gke${GKE_VERSION//./}
+        echo $CLUSTER_NAME_NIGHTLY
+        echo "Installing gcloud CLI"
+        export OS_TYPE="linux"
+        ${{ github.action_path }}/download_and_install_keptn.sh
+
+    - shell: bash
+      id: install_keptn
+      run: |
+        keptn install --endpoint-service-type=LoadBalancer --creds=creds.json --verbose --use-case=continuous-delivery
+
+    - shell: bash
+      id: verify_keptn_was_installed
+      run: keptn version
+
+    - shell: bash
+      id: expose_keptn_api
+      run: |
+        # install public-gateway.istio-system
+        kubectl apply -f - <<EOF
+        apiVersion: networking.istio.io/v1alpha3
+        kind: Gateway
+        metadata:
+          name: public-gateway
+          namespace: istio-system
+        spec:
+          selector:
+            istio: ingressgateway # use Istio default gateway implementation
+          servers:
+          - port:
+              number: 80
+              name: http
+              protocol: HTTP
+            hosts:
+            - "*"
+        EOF
+
+        # set ingress-hostname params
+        INGRESS_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+        echo "INGRESS_IP=$INGRESS_IP"
+        kubectl create configmap -n keptn ingress-config --from-literal=ingress_hostname_suffix=${INGRESS_IP}.nip.io --from-literal=ingress_port=80 --from-literal=ingress_protocol=http --from-literal=ingress_gateway=public-gateway.istio-system -oyaml --dry-run | kubectl replace -f -
+        # restart helm-service
+        kubectl delete pod -n keptn -lapp.kubernetes.io/name=helm-service
+        sleep 15
+
+    - shell: bash
+      id: verify_keptn_deployment
+      run: |
+        source test/utils.sh
+        echo "Verifying that services and namespaces have been created"
+
+        # verify the deployments within the keptn namespace (for keptn control plane)
+        verify_deployment_in_namespace "api-gateway-nginx" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "api-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "bridge" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "configuration-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "lighthouse-service" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "shipyard-controller" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "statistics-service" ${KEPTN_NAMESPACE}
+
+        # verify deployments for continuous delivery
+        if [[ "$RUN_CONTINUOUS_DELIVERY_TEST" == "true" ]]; then
+          verify_deployment_in_namespace "remediation-service" ${KEPTN_NAMESPACE}
+          verify_deployment_in_namespace "approval-service" ${KEPTN_NAMESPACE}
+          verify_deployment_in_namespace "helm-service" ${KEPTN_NAMESPACE}
+          verify_deployment_in_namespace "jmeter-service" ${KEPTN_NAMESPACE}
+        fi
+
+        # verify the datastore deployments
+        verify_deployment_in_namespace "mongodb" ${KEPTN_NAMESPACE}
+        verify_deployment_in_namespace "mongodb-datastore" ${KEPTN_NAMESPACE}
+
+    - shell: bash
+      id: authenticate_keptn_cli
+      run: |
+        source test/utils.sh
+        # authenticate at Keptn API
+        KEPTN_ENDPOINT=http://$(kubectl -n ${KEPTN_NAMESPACE} get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
+
+        KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n ${KEPTN_NAMESPACE} -ojsonpath={.data.keptn-api-token} | base64 --decode)
+
+        echo "KEPTN_ENDPOINT=${KEPTN_ENDPOINT}"
+
+        auth_at_keptn $KEPTN_ENDPOINT $KEPTN_API_TOKEN
+        verify_test_step $? "Could not authenticate at Keptn API"
+
+        echo "##[set-output name=KEPTN_ENDPOINT;]$(echo ${KEPTN_ENDPOINT})"
+        echo "##[set-output name=KEPTN_API_TOKEN;]$(echo ${KEPTN_API_TOKEN})"
+
+
+
+

@@ -1,0 +1,22 @@
+name: Setup Keptn
+on:
+  - push
+
+jobs:
+  send_keptn_event:
+    runs-on: ubuntu-latest
+    name: Setup Keptn
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+        #path: gh-action-setup-keptn # uncomment to test locally
+      - name: Setup Keptn
+        id: setup-keptn
+        uses: ./ #keptn/gh-action-send-event@feature/implement-action # use ./ to test locally
+        with:
+          KeptnVersion: '0.8.1'
+          GKEClusterVersion: '1.20'
+          GKEProjectName: '${secrets.GKE_PROJECT_NAME}'
+          GKEClusterName: 'keptn-meta-test'
+          GCloudServiceKey: '${secrets.GCLOUD_SERVICE_KEY}'

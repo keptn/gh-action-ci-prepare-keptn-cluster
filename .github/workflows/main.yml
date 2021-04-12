@@ -13,7 +13,7 @@ jobs:
         #path: gh-action-setup-keptn # uncomment to test locally
       - name: Setup Keptn
         id: setup-keptn
-        uses: ./ #keptn/gh-action-send-event@feature/implement-action # use ./ to test locally
+        uses: keptn/gh-action-send-event@feature/implement-action # use ./ to test locally
         with:
           KeptnVersion: '0.8.1'
           GKEClusterVersion: '1.20'

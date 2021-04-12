@@ -7,7 +7,7 @@ inputs:
     required: false
   GKEClusterVersion:
     description: Version of GKE Cluster
-    default: '1.20'
+    default: '1.18'
     required: false
   GKEClusterRegion:
     description: Region of the GKE Cluster

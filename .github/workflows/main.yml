@@ -16,7 +16,7 @@ jobs:
         uses: keptn/gh-action-setup-keptn@feature/implement-action # use ./ to test locally
         with:
           KeptnVersion: '0.8.1'
-          GKEClusterVersion: '1.20'
+          GKEClusterVersion: '1.18'
           GKEProjectName: ${{ secrets.GKE_PROJECT_NAME }}
           GKEClusterName: 'keptn-meta-test'
           GCloudServiceKey: ${{ secrets.GCLOUD_SERVICE_KEY }}

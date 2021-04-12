@@ -5,6 +5,22 @@ inputs:
     description: Version of Keptn to be installed.
     default: '0.8.1'
     required: false
+  KeptnProject:
+    description: Name of the Project used for Keptn self monitoring
+    default: 'keptn'
+    required: false
+  KeptnProjectVersion:
+    description: Version of the Keptn installation to be tested with Keptn
+    required: false
+    default: '0.8.1'
+  DynatraceServiceVersion:
+    description: Version of the dynatrace-service
+    default: '0.13.0'
+    required: false
+  DynatraceSLIServiceVersion:
+    description: Version of the dynatrace-sli-service
+    default: '0.10.0'
+    required: false
   GKEClusterVersion:
     description: Version of GKE Cluster
     default: '1.18'
@@ -71,68 +87,7 @@ runs:
 
     - shell: bash
       id: install_keptn
-      run: |
-        echo "{}" > creds.json # empty credentials file
-        keptn install --endpoint-service-type=LoadBalancer --creds=creds.json --verbose --use-case=continuous-delivery
-
-    - shell: bash
-      id: verify_keptn_was_installed
-      run: keptn version
-
-    - shell: bash
-      id: expose_keptn_api
-      run: |
-        # install public-gateway.istio-system
-        kubectl apply -f - <<EOF
-        apiVersion: networking.istio.io/v1alpha3
-        kind: Gateway
-        metadata:
-          name: public-gateway
-          namespace: istio-system
-        spec:
-          selector:
-            istio: ingressgateway # use Istio default gateway implementation
-          servers:
-          - port:
-              number: 80
-              name: http
-              protocol: HTTP
-            hosts:
-            - "*"
-        EOF
-
-        # set ingress-hostname params
-        INGRESS_IP=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
-        echo "INGRESS_IP=$INGRESS_IP"
-        kubectl create configmap -n keptn ingress-config --from-literal=ingress_hostname_suffix=${INGRESS_IP}.nip.io --from-literal=ingress_port=80 --from-literal=ingress_protocol=http --from-literal=ingress_gateway=public-gateway.istio-system -oyaml --dry-run | kubectl replace -f -
-        # restart helm-service
-        kubectl delete pod -n keptn -lapp.kubernetes.io/name=helm-service
-        sleep 15
-
-    - shell: bash
-      id: verify_keptn_deployment
-      run: |
-        source ./utils.sh
-        echo "Verifying that services and namespaces have been created"
-
-        # verify the deployments within the keptn namespace (for keptn control plane)
-        verify_deployment_in_namespace "api-gateway-nginx" keptn
-        verify_deployment_in_namespace "api-service" keptn
-        verify_deployment_in_namespace "bridge" keptn
-        verify_deployment_in_namespace "configuration-service" keptn
-        verify_deployment_in_namespace "lighthouse-service" keptn
-        verify_deployment_in_namespace "shipyard-controller" keptn
-        verify_deployment_in_namespace "statistics-service" keptn
-
-        # verify deployments for continuous delivery
-        verify_deployment_in_namespace "remediation-service" keptn
-        verify_deployment_in_namespace "approval-service" keptn
-        verify_deployment_in_namespace "helm-service" keptn
-        verify_deployment_in_namespace "jmeter-service" keptn
-
-        # verify the datastore deployments
-        verify_deployment_in_namespace "mongodb" keptn
-        verify_deployment_in_namespace "mongodb-datastore" keptn
+      run: ${{ github.action_path }}/install_keptn.sh
 
     - shell: bash
       id: authenticate_keptn_cli
@@ -150,6 +105,12 @@ runs:
 
         echo "##[set-output name=KEPTN_ENDPOINT;]$(echo ${KEPTN_ENDPOINT})"
         echo "##[set-output name=KEPTN_API_TOKEN;]$(echo ${KEPTN_API_TOKEN})"
+
+    - shell: bash
+      id: setup_keptn_project
+      env:
+        KEPTN_PROJECT: ${{ inputs.KeptnProject }}
+      run: ${{ github.action_path }}/setup_keptn_project.sh
 
 
 

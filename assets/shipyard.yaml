@@ -39,6 +39,10 @@ spec:
           triggeredOn:
             - event: "hardening.delivery.finished"
           tasks:
+            - name: "approval"
+              properties:
+                pass: manual
+                warning: manual
             - name: "deployment"
               properties:
                 deploymentstrategy: "user_managed"
@@ -50,6 +54,10 @@ spec:
           triggeredOn:
             - event: "hardening.delivery.finished"
           tasks:
+            - name: "approval"
+              properties:
+                pass: automatic
+                warning: automatic
             - name: "deployment"
               properties:
                 deploymentstrategy: "user_managed"

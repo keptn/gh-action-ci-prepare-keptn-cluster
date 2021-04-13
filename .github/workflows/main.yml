@@ -49,11 +49,8 @@ jobs:
                 "stage": "dev",
                 "status": ""
               },
-              "id": "bff4a822-fce0-45ec-9f48-d895e4008982",
               "source": "gh",
               "specversion": "1.0",
-              "time": "2021-04-01T13:00:57.724Z",
               "type": "sh.keptn.event.dev.delivery.triggered",
-              "shkeptncontext": "80c8ec63-b59c-406c-86a4-4d111b2c2cad",
               "shkeptnspecversion": "0.2.1"
             }

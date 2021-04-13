@@ -24,8 +24,8 @@ jobs:
         id: trigger-delivery
         uses: keptn/gh-action-send-event@main
         with:
-          keptnApiUrl: ${{ steps.setup-keptn.outputs.keptnAPIURL }}/v1/event
-          keptnApiToken: ${{ steps.setup-keptn.outputs.keptnAPIToken }}
+          keptnApiUrl: ${{ steps.setup-keptn.outputs.KeptnAPIURL }}/v1/event
+          keptnApiToken: ${{ steps.setup-keptn.outputs.KeptnAPIToken }}
           event: |
             {
               "data": {

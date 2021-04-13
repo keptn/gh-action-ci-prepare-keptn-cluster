@@ -21,8 +21,8 @@ spec:
     - name: "hardening"
       sequences:
         - name: "delivery"
-          triggeredOn:
-            - event: "dev.delivery.finished"
+          #triggeredOn:
+          #  - event: "dev.delivery.finished"
           tasks:
             - name: "deployment"
               properties:
@@ -36,8 +36,8 @@ spec:
     - name: "production"
       sequences:
         - name: "delivery"
-          triggeredOn:
-            - event: "hardening.delivery.finished"
+          #triggeredOn:
+          #  - event: "hardening.delivery.finished"
           tasks:
             - name: "approval"
               properties:
@@ -51,8 +51,8 @@ spec:
     - name: "production-remote"
       sequences:
         - name: "delivery"
-          triggeredOn:
-            - event: "hardening.delivery.finished"
+          #triggeredOn:
+          #  - event: "hardening.delivery.finished"
           tasks:
             - name: "approval"
               properties:

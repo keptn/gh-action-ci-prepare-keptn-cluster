@@ -21,3 +21,39 @@ jobs:
           GKEProjectName: ${{ secrets.GKE_PROJECT_NAME }}
           GKEClusterName: 'keptn-meta-test'
           GCloudServiceKey: ${{ secrets.GCLOUD_SERVICE_KEY }}
+
+      - name: Trigger delivery
+        id: trigger-delivery
+        uses: keptn/gh-action-send-event@feature/implement-action
+        with:
+          KEPTN_API_URL: ${{ steps.setup-keptn.outputs.KEPTN_ENDPOINT }}
+          KEPTN_API_TOKEN: ${{ steps.setup-keptn.outputs.KEPTN_API_TOKEN }}
+          event: |
+            {
+              "data": {
+                "configurationChange": {
+                  "values": {
+                    "control-plane": {
+                      "enabled": true
+                    }
+                  }
+                },
+                "deployment": {
+                  "deploymentURIsLocal": null,
+                  "deploymentstrategy": "direct"
+                },
+                "message": "",
+                "project": "keptn",
+                "result": "",
+                "service": "keptn",
+                "stage": "dev",
+                "status": ""
+              },
+              "id": "bff4a822-fce0-45ec-9f48-d895e4008982",
+              "source": "gh",
+              "specversion": "1.0",
+              "time": "2021-04-01T13:00:57.724Z",
+              "type": "sh.keptn.event.dev.delivery.triggered",
+              "shkeptncontext": "80c8ec63-b59c-406c-86a4-4d111b2c2cad",
+              "shkeptnspecversion": "0.2.1"
+            }

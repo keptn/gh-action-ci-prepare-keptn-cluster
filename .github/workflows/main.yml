@@ -10,11 +10,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        #with:
-        #path: gh-action-setup-keptn # uncomment to test locally
       - name: Setup Keptn
         id: setup-keptn
-        uses: keptn/gh-action-setup-keptn@feature/implement-action # use ./ to test locally
+        uses: keptn/gh-action-setup-keptn@feature/implement-action
         with:
           KeptnVersion: '0.8.1'
           GKEClusterVersion: '1.18'
@@ -26,7 +24,7 @@ jobs:
         id: trigger-delivery
         uses: keptn/gh-action-send-event@main
         with:
-          keptnApiUrl: ${{ steps.setup-keptn.outputs.keptnAPIURL }}
+          keptnApiUrl: ${{ steps.setup-keptn.outputs.keptnAPIURL }}/v1/event
           keptnApiToken: ${{ steps.setup-keptn.outputs.keptnAPIToken }}
           event: |
             {

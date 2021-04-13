@@ -26,7 +26,7 @@ echo "Creating nightly cluster ${GKE_CLUSTER_NAME}"
 gcloud beta container --project "$GCLOUD_PROJECT_NAME" clusters create "$GKE_CLUSTER_NAME" --zone "$CLOUDSDK_COMPUTE_ZONE" \
     --release-channel "None" --cluster-version "$GKE_VERSION" \
     --no-enable-basic-auth \
-    --machine-type "n1-standard-4" --image-type "UBUNTU" --num-nodes "3" --preemptible --disk-type "pd-standard" --disk-size "25" \
+    --machine-type "${GKE_CLUSTER_MACHINE_TYPE}" --image-type "UBUNTU" --num-nodes "${GKE_CLUSTER_NUM_NODES}" --preemptible --disk-type "pd-standard" --disk-size "25" \
     --metadata disable-legacy-endpoints=true \
     --scopes "https://www.googleapis.com/auth/devstorage.read_only","https://www.googleapis.com/auth/logging.write","https://www.googleapis.com/auth/monitoring","https://www.googleapis.com/auth/servicecontrol","https://www.googleapis.com/auth/service.management.readonly","https://www.googleapis.com/auth/trace.append" \
     --enable-stackdriver-kubernetes --enable-ip-alias \

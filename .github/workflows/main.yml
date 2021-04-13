@@ -1,6 +1,7 @@
 name: Setup Keptn
 on:
   - push
+  - workflow_dispatch
 
 jobs:
   send_keptn_event:

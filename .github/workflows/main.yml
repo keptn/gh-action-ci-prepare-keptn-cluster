@@ -24,7 +24,7 @@ jobs:
 
       - name: Trigger delivery
         id: trigger-delivery
-        uses: keptn/gh-action-send-event@feature/implement-action
+        uses: keptn/gh-action-send-event@master
         with:
           keptnApiUrl: ${{ steps.setup-keptn.outputs.keptnAPIURL }}
           keptnApiToken: ${{ steps.setup-keptn.outputs.keptnAPIToken }}

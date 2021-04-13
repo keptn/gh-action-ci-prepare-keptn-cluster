@@ -13,10 +13,18 @@ inputs:
     description: Version of the Keptn installation to be tested with Keptn
     required: false
     default: '0.8.1'
+  OnboardDynatraceService:
+    description: Indicates whether the dynatrace-service should be onboarded
+    required: false
+    default: 'false'
   DynatraceServiceVersion:
     description: Version of the dynatrace-service
     default: '0.13.0'
     required: false
+  OnboardDynatraceSLIService:
+    description: Indicates whether the dynatrace-sli-service should be onboarded
+    required: false
+    default: 'false'
   DynatraceSLIServiceVersion:
     description: Version of the dynatrace-sli-service
     default: '0.10.0'
@@ -119,6 +127,10 @@ runs:
       env:
         KEPTN_PROJECT: ${{ inputs.KeptnProject }}
         KEPTN_PROJECT_VERSION: ${{ inputs.KeptnProjectVersion }}
+        ONBOARD_DYNATRACE_SERVICE: ${{ inputs.OnboardDynatraceService }}
+        DYNATRACE_SERVICE_VERSION: ${{ inputs.DynatraceServiceVersion }}
+        ONBOARD_DYNATRACE_SLI_SERVICE: ${{ inputs.OnboardDynatraceSLIService }}
+        DYNATRACE_SLI_SERVICE_VERSION: ${{ inputs.DynatraceSLIServiceVersion }}
       run: ${{ github.action_path }}/setup_keptn_project.sh
 
 

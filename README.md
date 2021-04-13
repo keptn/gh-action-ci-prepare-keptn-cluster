@@ -8,7 +8,9 @@ GH Action to spin up a GKE Cluster, install Keptn on it, and create Keptn as a p
 | KeptnVersion | no | string | Version of Keptn to be installed | `0.8.1` |
 | KeptnProject | no | string | Name of the Project used for Keptn self monitoring | `keptn` |
 | KeptnProjectVersion | no | string | Version of the Keptn installation to be tested with Keptn | `0.8.1` |
+| OnboardDynatraceService | no | string | Indicates whether the dynatrace-service should be onboarded | `false` |
 | DynatraceServiceVersion | no | string | Version of the dynatrace-service | `0.13.0` |
+| OnboardDynatraceSLIService | no | string | Indicates whether the dynatrace-sli-service should be onboarded | `false` |
 | DynatraceSLIServiceVersion | no | string | Version of the dynatrace-sli-service | `0.10.0` |
 | GKEClusterVersion | no | string | Version of the GKE Cluster | `1.18` |
 | GKEClusterRegion | no | string | Region of the GKE Cluster | `us-east1` |

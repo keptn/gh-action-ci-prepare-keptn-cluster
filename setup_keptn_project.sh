@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ${{ github.action_path }}/utils.sh
+source ${BASE_PATH}/utils.sh
 
 echo "Creating project ${KEPTN_PROJECT}"
 keptn create project ${KEPTN_PROJECT} --shipyard=./assets/shipyard.yaml

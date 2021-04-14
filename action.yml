@@ -93,6 +93,8 @@ runs:
 
     - shell: bash
       id: install_istio
+      env:
+        BASE_PATH: ${{ github.action_path }}
       run: ${{ github.action_path }}/install_istio.sh
 
     - shell: bash
@@ -103,6 +105,8 @@ runs:
 
     - shell: bash
       id: install_keptn
+      env:
+        BASE_PATH: ${{ github.action_path }}
       run: ${{ github.action_path }}/install_keptn.sh
 
     - shell: bash
@@ -128,11 +132,13 @@ runs:
         KEPTN_VERSION: ${{ inputs.KeptnVersion }}
         KEPTN_ENDPOINT: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
         KEPTN_API_TOKEN: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
+        BASE_PATH: ${{ github.action_path }}
       run: ${{ github.action_path }}/install_remote_execution_plane.sh
 
     - shell: bash
       id: setup_keptn_project
       env:
+        BASE_PATH: ${{ github.action_path }}
         KEPTN_PROJECT: ${{ inputs.KeptnProject }}
         KEPTN_PROJECT_VERSION: ${{ inputs.KeptnProjectVersion }}
         ONBOARD_DYNATRACE_SERVICE: ${{ inputs.OnboardDynatraceService }}

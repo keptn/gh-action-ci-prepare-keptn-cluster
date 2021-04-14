@@ -1,6 +1,8 @@
 # gh-action-setup-keptn
 
-GH Action to spin up a GKE Cluster, install Keptn on it, and create Keptn as a project within itself. The output of this action provides the API credentials for the created Keptn instance.
+GH Action to spin up a GKE Cluster, install Keptn on it, and create Keptn as a project within itself. 
+The output of this action provides the API credentials for the created Keptn instance.
+In addition to Keptn, also the dynatrace-service and dynatrace-sli-service can be onboarded as services within the Keptn project.
 
 ## Parameters
 | Name | Mandatory | Format | Description | Default |

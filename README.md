@@ -26,7 +26,7 @@ In addition to Keptn, also the dynatrace-service and dynatrace-sli-service can b
 
 ### Outputs
 | Name | Format | Description |
-|--|--|--|--|
+|--|--|--|
 | KeptnAPIUrl | url | Keptn API URL | 
 | KeptnAPIToken | string | Keptn API Token |
 

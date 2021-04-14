@@ -125,6 +125,7 @@ runs:
     - shell: bash
       id: install_remote_execution_plane
       env:
+        KEPTN_VERSION: ${{ inputs.KeptnVersion }}
         KEPTN_ENDPOINT: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
         KEPTN_API_TOKEN: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
       run: ${{ github.action_path }}/install_remote_execution_plane.sh

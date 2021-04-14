@@ -3,7 +3,7 @@
 source ${BASE_PATH}/utils.sh
 
 echo "Creating project ${KEPTN_PROJECT}"
-keptn create project ${KEPTN_PROJECT} --shipyard=./assets/shipyard.yaml
+keptn create project ${KEPTN_PROJECT} --shipyard=${BASE_PATH}/assets/shipyard.yaml
 
 echo "Onboarding Keptn to ${KEPTN_PROJECT}"
 keptn create service keptn --project=${KEPTN_PROJECT}

@@ -3,7 +3,7 @@
 source ./utils.sh
 
 echo "{}" > creds.json # empty credentials file
-keptn install --endpoint-service-type=LoadBalancer --creds=creds.json --verbose --use-case=continuous-delivery
+keptn install --endpoint-service-type=LoadBalancer --creds=creds.json --verbose
 
 keptn version
 
@@ -48,8 +48,6 @@ verify_deployment_in_namespace "statistics-service" keptn
 # verify deployments for continuous delivery
 verify_deployment_in_namespace "remediation-service" keptn
 verify_deployment_in_namespace "approval-service" keptn
-verify_deployment_in_namespace "helm-service" keptn
-verify_deployment_in_namespace "jmeter-service" keptn
 
 # verify the datastore deployments
 verify_deployment_in_namespace "mongodb" keptn

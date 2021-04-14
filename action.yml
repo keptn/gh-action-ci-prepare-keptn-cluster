@@ -123,6 +123,13 @@ runs:
         echo "##[set-output name=KEPTN_API_TOKEN;]$(echo ${KEPTN_API_TOKEN})"
 
     - shell: bash
+      id: install_remote_execution_plane
+      env:
+        KEPTN_ENDPOINT: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
+        KEPTN_API_TOKEN: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
+      run: ${{ github.action_path }}/install_remote_execution_plane.sh
+
+    - shell: bash
       id: setup_keptn_project
       env:
         KEPTN_PROJECT: ${{ inputs.KeptnProject }}

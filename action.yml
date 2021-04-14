@@ -1,0 +1,146 @@
+name: 'Setup Keptn'
+description: 'Creates a GKE Cluster and installs Keptn on it'
+inputs:
+  KeptnVersion:
+    description: Version of Keptn to be installed.
+    default: '0.8.1'
+    required: false
+  KeptnProject:
+    description: Name of the Project used for Keptn self monitoring
+    default: 'keptn'
+    required: false
+  KeptnProjectVersion:
+    description: Version of the Keptn installation to be tested with Keptn
+    required: false
+    default: '0.8.1'
+  OnboardDynatraceService:
+    description: Indicates whether the dynatrace-service should be onboarded
+    required: false
+    default: 'false'
+  DynatraceServiceVersion:
+    description: Version of the dynatrace-service
+    default: '0.13.0'
+    required: false
+  OnboardDynatraceSLIService:
+    description: Indicates whether the dynatrace-sli-service should be onboarded
+    required: false
+    default: 'false'
+  DynatraceSLIServiceVersion:
+    description: Version of the dynatrace-sli-service
+    default: '0.10.0'
+    required: false
+  GKEClusterVersion:
+    description: Version of the GKE Cluster
+    default: '1.18'
+    required: false
+  GKEClusterRegion:
+    description: Region of the GKE Cluster
+    default: 'us-east1'
+    required: false
+  GKEProjectName:
+    description: Name of the GKE Project
+    required: true
+  GKEClusterName:
+    description: Name of the GKE Cluster
+    required: true
+  GKEClusterMachineType:
+    description: Name of the machine type used for the GKE Cluster
+    default: 'n1-standard-4'
+    required: false
+  GKEClusterNumNodes:
+    description: Number of nodes for the GKE Cluster
+    default: '3'
+    required: false
+  GCloudComputeZone:
+    description: Name of the GCloud compute Zone
+    default: 'us-east1-b'
+    required: false
+  GCloudServiceKey:
+    description: Base64 encoded GCloud service Key JSON
+    required: true
+outputs:
+  KeptnAPIURL:
+    value: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
+    description: URL of the created Keptn instance
+  KeptnAPIToken:
+    value: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
+    description: API Token of the created Keptn instance
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      id: create_downloads_folder
+      run: mkdir ${HOME}/downloads
+    - shell: bash
+      id: create_gke_cluster
+      env:
+        GKE_VERSION: ${{ inputs.GKEClusterVersion }}
+        GKE_CLUSTER_NAME: ${{ inputs.GKEClusterName }}
+        GCLOUD_SERVICE_KEY: ${{ inputs.GCloudServiceKey }}
+        GCLOUD_PROJECT_NAME: ${{ inputs.GKEProjectName }}
+        CLOUDSDK_COMPUTE_ZONE: ${{ inputs.GCloudComputeZone }}
+        GKE_CLUSTER_MACHINE_TYPE: ${{ inputs.GKEClusterMachineType }}
+        GKE_CLUSTER_NUM_NODES: ${{ inputs.GKEClusterNumNodes }}
+        CLOUDSDK_REGION: ${{ inputs.GKEClusterRegion }}
+      run: |
+        echo "Installing gcloud CLI"
+        export OS_TYPE="linux"
+        ${{ github.action_path }}/download_and_install_gcloud.sh
+        echo ${GCLOUD_SERVICE_KEY} | base64 --decode > ~/gcloud-service-key.json
+        gcloud auth activate-service-account --key-file ~/gcloud-service-key.json
+        ${{ github.action_path }}/gke_create_cluster.sh
+        ${{ github.action_path }}/gke_authenticate_at_cluster.sh
+
+    - shell: bash
+      id: install_istio
+      run: ${{ github.action_path }}/install_istio.sh
+
+    - shell: bash
+      id: install_keptn_cli
+      env:
+        KEPTN_VERSION: ${{ inputs.KeptnVersion }}
+      run: ${{ github.action_path }}/download_and_install_keptn.sh
+
+    - shell: bash
+      id: install_keptn
+      run: ${{ github.action_path }}/install_keptn.sh
+
+    - shell: bash
+      id: authenticate_keptn_cli
+      run: |
+        source ./utils.sh
+        # authenticate at Keptn API
+        KEPTN_ENDPOINT=http://$(kubectl -n keptn get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
+
+        KEPTN_API_TOKEN=$(kubectl get secret keptn-api-token -n keptn -ojsonpath={.data.keptn-api-token} | base64 --decode)
+
+        echo "KEPTN_ENDPOINT=${KEPTN_ENDPOINT}"
+
+        auth_at_keptn $KEPTN_ENDPOINT $KEPTN_API_TOKEN
+        verify_test_step $? "Could not authenticate at Keptn API"
+
+        echo "##[set-output name=KEPTN_ENDPOINT;]$(echo ${KEPTN_ENDPOINT})"
+        echo "##[set-output name=KEPTN_API_TOKEN;]$(echo ${KEPTN_API_TOKEN})"
+
+    - shell: bash
+      id: install_remote_execution_plane
+      env:
+        KEPTN_VERSION: ${{ inputs.KeptnVersion }}
+        KEPTN_ENDPOINT: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_ENDPOINT }}
+        KEPTN_API_TOKEN: ${{ steps.authenticate_keptn_cli.outputs.KEPTN_API_TOKEN }}
+      run: ${{ github.action_path }}/install_remote_execution_plane.sh
+
+    - shell: bash
+      id: setup_keptn_project
+      env:
+        KEPTN_PROJECT: ${{ inputs.KeptnProject }}
+        KEPTN_PROJECT_VERSION: ${{ inputs.KeptnProjectVersion }}
+        ONBOARD_DYNATRACE_SERVICE: ${{ inputs.OnboardDynatraceService }}
+        DYNATRACE_SERVICE_VERSION: ${{ inputs.DynatraceServiceVersion }}
+        ONBOARD_DYNATRACE_SLI_SERVICE: ${{ inputs.OnboardDynatraceSLIService }}
+        DYNATRACE_SLI_SERVICE_VERSION: ${{ inputs.DynatraceSLIServiceVersion }}
+      run: ${{ github.action_path }}/setup_keptn_project.sh
+
+
+
+

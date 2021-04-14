@@ -4,8 +4,8 @@ source ./utils.sh
 
 # install helm
 wget -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 -O ${HOME}/downloads/get_helm.sh
-chmod 700 ${HOME}/downloadsget_helm.sh
-./${HOME}/downloads/get_helm.sh
+chmod 700 ${HOME}/downloads/get_helm.sh
+.${HOME}/downloads/get_helm.sh
 
 # download helm-service chart
 wget "https://github.com/keptn/keptn/releases/download/${KEPTN_VERSION}/helm-service-${KEPTN_VERSION}.tgz" -O "${HOME}/downloads/helm-service.tgz"

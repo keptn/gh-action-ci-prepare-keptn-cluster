@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./utils.sh
+source ${BASE_PATH}/utils.sh
 
 # download helm-service chart
 wget "https://github.com/keptn/keptn/releases/download/${KEPTN_VERSION}/helm-service-${KEPTN_VERSION}.tgz" -O "${HOME}/downloads/helm-service.tgz"

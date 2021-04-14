@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./utils.sh
+source ${BASE_PATH}/utils.sh
 
 echo "{}" > creds.json # empty credentials file
 keptn install --endpoint-service-type=LoadBalancer --creds=creds.json --verbose

@@ -108,7 +108,7 @@ runs:
     - shell: bash
       id: authenticate_keptn_cli
       run: |
-        source ./utils.sh
+        source ${{ github.action_path }}/utils.sh
         # authenticate at Keptn API
         KEPTN_ENDPOINT=http://$(kubectl -n keptn get service api-gateway-nginx -o jsonpath='{.status.loadBalancer.ingress[0].ip}')/api
 

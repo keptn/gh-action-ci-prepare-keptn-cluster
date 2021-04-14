@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # shellcheck disable=SC1091
-source ./utils.sh
+source ${{ github.action_path }}/utils.sh
 
 # install istio
 curl -L https://istio.io/downloadIstio | ISTIO_VERSION=1.8.2 sh -

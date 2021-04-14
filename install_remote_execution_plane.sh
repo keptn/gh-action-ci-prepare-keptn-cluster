@@ -25,5 +25,5 @@ KEPTN_API_HOSTNAME=$(echo "${KEPTN_ENDPOINT}" | awk -F[/] '{print $3}')
 helm install helm-service http://0.0.0.0:8000/"helm-service.tgz" -n keptn-uniform --set remoteControlPlane.enabled=true --set remoteControlPlane.api.protocol=http --set remoteControlPlane.api.hostname="${KEPTN_API_HOSTNAME}" --set remoteControlPlane.api.token="${KEPTN_API_TOKEN}" --create-namespace
 helm install jmeter-service http://0.0.0.0:8000/"jmeter-service.tgz" -n keptn-uniform --set remoteControlPlane.enabled=true --set remoteControlPlane.api.protocol=http --set remoteControlPlane.api.hostname="${KEPTN_API_HOSTNAME}" --set remoteControlPlane.api.token="${KEPTN_API_TOKEN}" --create-namespace
 
-helm test jmeter-service -n keptn-jmeter-service
-helm test helm-service -n keptn-helm-service
+helm test jmeter-service -n keptn-uniform
+helm test helm-service -n keptn-uniform

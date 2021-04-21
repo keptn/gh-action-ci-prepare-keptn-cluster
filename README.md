@@ -1,4 +1,4 @@
-# gh-action-setup-keptn
+# gh-action-ci-prepare-keptn-cluster
 
 GH Action to spin up a GKE Cluster, install Keptn on it, and create Keptn as a project within itself. 
 The output of this action provides the API credentials for the created Keptn instance.
@@ -46,7 +46,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Setup Keptn
         id: setup-keptn
-        uses: keptn/gh-action-setup-keptn@main
+        uses: keptn/gh-action-ci-prepare-keptn-cluster@main
         with:
           KeptnVersion: '0.8.1'
           GKEClusterVersion: '1.18'
